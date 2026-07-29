@@ -30,6 +30,24 @@ const dirname = import.meta.dirname
 type FormatsToFileNames = [LibraryFormats, string][]
 
 describe('build', () => {
+  test('generated asset URLs do not collide with a URL named export', async () => {
+    const result = (await build({
+      root: resolve(dirname, 'fixtures/url-named-export'),
+      base: './',
+      logLevel: 'silent',
+      build: {
+        write: false,
+        assetsInlineLimit: 0,
+        minify: false,
+      },
+    })) as RolldownOutput
+    const chunk = result.output.find((output) => output.type === 'chunk')
+
+    expect(chunk?.code).toContain('"named export"')
+    expect(chunk?.code).toContain('new globalThis.URL(')
+    expect(chunk?.code).not.toMatch(/\bnew URL\(/)
+  })
+
   test('file hash should change when css changes for dynamic entries', async () => {
     const buildProject = async (cssColor: string) => {
       return (await build({
