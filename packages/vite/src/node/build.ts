@@ -1578,7 +1578,8 @@ function escapeId(id: string): string {
   return id.replace(backSlashRegEx, '\\\\').replace(quoteNewlineRegEx, '\\$1')
 }
 
-const getResolveUrl = (path: string, URL = 'URL') => `new ${URL}(${path}).href`
+const getResolveUrl = (path: string, URL = 'globalThis.URL') =>
+  `new ${URL}(${path}).href`
 
 const getRelativeUrlFromDocument = (relativePath: string, umd = false) =>
   getResolveUrl(
